@@ -1,0 +1,236 @@
+openapi: 3.0.1
+info:
+  title: Notes web app API
+  description: REST API for the management of notes and categories.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /api/notes:
+    get:
+      summary: Get all notes
+      description: Returns a list of notes. You can filter by archived status.
+      parameters:
+        - in: query
+          name: archived
+          schema:
+            type: boolean
+          description: Filter notes by archived status (true/false)
+      responses:
+        200:
+          description: List of notes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  payload:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Note'
+    post:
+      summary: Create a new note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteInput'
+      responses:
+        201:
+          description: Note created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+  /api/notes/{id}:
+    delete:
+      summary: Delete a note
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Note deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+        404:
+          description: Note not found
+    patch:
+      summary: Update a note
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NoteUpdateInput'
+      responses:
+        200:
+          description: Note updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Note'
+        404:
+          description: Note not found
+  /api/categories:
+    get:
+      summary: Get all categories
+      responses:
+        200:
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  payload:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+    post:
+      summary: Create a new category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryInput'
+      responses:
+        201:
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+  /api/categories/{id}:
+    delete:
+      summary: Delete a category
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Category deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        404:
+          description: Category not found
+    patch:
+      summary: Update a category
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryInput'
+      responses:
+        200:
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        404:
+          description: Category not found
+components:
+  schemas:
+    Note:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        category:
+          type: integer
+          nullable: true
+        archived:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        modifiedAt:
+          type: string
+          format: date-time
+          nullable: true
+        Category:
+          $ref: '#/components/schemas/Category'
+    NoteInput:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        category:
+          type: integer
+          nullable: true
+      required:
+        - title
+        - content
+    NoteUpdateInput:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        category:
+          type: integer
+          nullable: true
+        archived:
+          type: boolean
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        modifiedAt:
+          type: string
+          format: date-time
+          nullable: true
+        Notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Note'
+    CategoryInput:
+      type: object
+      properties:
+        name:
+          type: string
+      required:
+        - name
