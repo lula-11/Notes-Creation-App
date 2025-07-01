@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import { notesRouter } from './routes/notesRouter.js';
 import { categoriesRouter } from './routes/categoriesRouter.js';
 import { docsSpecs } from './config/swagger.config.js';
@@ -13,6 +14,7 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 app.use(addLogger);
 app.use('/api/notes', notesRouter.getRouter());
