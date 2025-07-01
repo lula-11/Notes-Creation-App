@@ -9,13 +9,18 @@ paths:
   /api/notes:
     get:
       summary: Get all notes
-      description: Returns a list of notes. You can filter by archived status.
+      description: Returns a list of notes. You can filter by archived status and category.
       parameters:
         - in: query
           name: archived
           schema:
             type: boolean
           description: Filter notes by archived status (true/false)
+        - in: query
+          name: category
+          schema:
+            type: integer
+          description: Filter notes by category ID. Use -1 to filter by no category or leave empty to get all notes.
       responses:
         200:
           description: List of notes
