@@ -1,10 +1,18 @@
+import { categoriesService } from '../services/categories.service.js';
+
 export default class NotesDTO {
-    static create({ title, content, category }) {
+    static async create({ title, content, category }) {
         if (typeof title !== 'string' || !title.trim()) {
             throw new Error('Title is required and must be a non-empty string');
         }
         if (typeof content !== 'string' || !content.trim()) {
             throw new Error('Content is required and must be a non-empty string');
+        }
+        if (category !== undefined) {
+            const found = await categoriesService.getById(category);
+            if (!found) {
+                throw new Error('Category does not exist');
+            }
         }
         const note = {
             title: title.trim(),
@@ -18,7 +26,7 @@ export default class NotesDTO {
         return note;
     }
 
-    static update(original, changes) {
+    static async update(original, changes) {
         const updated = { ...original };
         let modified = false;
 
@@ -37,6 +45,10 @@ export default class NotesDTO {
             modified = true;
         }
         if ('category' in changes) {
+            const found = await categoriesService.getById(changes.category);
+            if (!found) {
+                throw new Error('Category does not exist');
+            }
             updated.category = changes.category;
             modified = true;
         }

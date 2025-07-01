@@ -25,9 +25,9 @@ class Controller {
         let props = req.body;
 
         try {
-            data = this.dto.create(props);
+            data = await this.dto.create(props);
         } catch (error) {
-            return res.sendBadRequestError(`Invalid data for creating ${this.name}`);
+            return res.sendBadRequestError(`Invalid data for creating ${this.name}: ${error.message}`);
         }
 
         try {
@@ -79,9 +79,9 @@ class Controller {
 
         let updatedData;
         try {
-            updatedData = this.dto.update(original, props);
+            updatedData = await this.dto.update(original, props);
         } catch (error) {
-            return res.sendBadRequestError(`Invalid data for updating ${this.name}`);
+            return res.sendBadRequestError(`Invalid data for updating ${this.name}: ${error.message}`);
         }
 
         try {
