@@ -1,4 +1,7 @@
 import { Router as ExpressRouter } from 'express';
+import jwt from 'jsonwebtoken';
+
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 export default class Router {
     constructor(controller) {
@@ -74,7 +77,35 @@ export default class Router {
     handlePolicies = policies => (req, res, next) => {
         if (policies[0] === "PUBLIC") return next();
 
-        return res.sendNotImplementedError("This endpoint is protected but access policies are not implemented yet.");
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.startsWith('Bearer ') 
+            ? authHeader.substring(7) 
+            : null;
+
+        if (!token) {
+            return res.sendUnauthorizedError('Access token not provided');
+        }
+
+        try {
+            jwt.verify(token, PRIVATE_KEY, async (err, decoded) => {
+                if (err) {
+                    if (err.name === 'TokenExpiredError' || err.name === 'ExpiredError') {
+                        return res.sendUnauthorizedError('Access token expired');
+                    }
+                    return res.sendUnauthorizedError('Invalid access token');
+                }
+
+                if (!policies.includes(decoded.user.role.toUpperCase())) {
+                    return res.sendForbiddenError('User not allowed to access this resource');
+                }
+                
+                req.user = decoded.user;
+
+                next();
+            });
+        } catch (error) {
+            return res.sendUnauthorizedError(error.message);
+        }
     } 
 
     get(path, policies, ...callbacks) {

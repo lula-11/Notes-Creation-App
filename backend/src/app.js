@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { notesRouter } from './routes/notesRouter.js';
 import { categoriesRouter } from './routes/categoriesRouter.js';
+import { sessionsRouter } from './routes/sessionsRouter.js';
 import { docsSpecs } from './config/swagger.config.js';
 import cookieParser from 'cookie-parser';
 import swaggerUiExpress from "swagger-ui-express";
@@ -25,7 +26,8 @@ app.use(cors());
 app.use(addLogger);
 app.use('/api/notes', notesRouter.getRouter());
 app.use('/api/categories', categoriesRouter.getRouter());
-app.use('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(docsSpecs));
+app.use('/api/sessions', sessionsRouter.getRouter());
+app.use('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(docsSpecs, { swaggerOptions: { withCredentials: true } }));
 
 sequelize.authenticate()
     .then(async () => {
