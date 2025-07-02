@@ -52,14 +52,14 @@ class SessionsController {
             
             const decoded = validateRefreshToken(refreshToken);
             
-            if (!decoded) {
+            if (!decoded || !decoded.userId) {
                 return res.sendUnauthorizedError('Invalid or expired refresh token');
             }
             
             const user = await usersService.getById(decoded.userId);
             
-            if (!user || !user.active) {
-                return res.sendUnauthorizedError('User not found or inactive');
+            if (!user) {
+                return res.sendUnauthorizedError('User not found');
             }
             
             const result = await handleTokens(res, user);
