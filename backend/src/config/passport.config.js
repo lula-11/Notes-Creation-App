@@ -1,6 +1,7 @@
 import passport from 'passport';
 import local from 'passport-local'
 import jwt from "passport-jwt"
+import { usersService } from '../services/users.service.js';
 
 const LocalStrategy = local.Strategy;
 const JWTStrategy = jwt.Strategy;
@@ -53,7 +54,7 @@ export const initializePassport = () => {
                 return done(null, false, { message: 'Wrong credentials.' });
             }
 
-            const validate = await user.isValidPassword(password);
+            const validate = await user.validatePassword(password);
             if (!validate) {
                 return done(null, false, { message: `Wrong credentials.` });
             }
