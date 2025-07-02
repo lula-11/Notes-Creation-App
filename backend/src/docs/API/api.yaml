@@ -35,6 +35,12 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Note'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       summary: Create a new note
       requestBody:
@@ -50,6 +56,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Note'
+        400:
+          description: Invalid data for creating note
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/notes/{id}:
     delete:
       summary: Delete a note
@@ -66,8 +84,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Note'
+        400:
+          description: ID is required to delete note
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         404:
           description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     patch:
       summary: Update a note
       parameters:
@@ -89,8 +123,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Note'
+        400:
+          description: Invalid data for updating note or ID is required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         404:
           description: Note not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/categories:
     get:
       summary: Get all categories
@@ -108,6 +158,12 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Category'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       summary: Create a new category
       requestBody:
@@ -123,6 +179,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Category'
+        400:
+          description: Invalid data for creating category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /api/categories/{id}:
     delete:
       summary: Delete a category
@@ -139,8 +207,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Category'
+        400:
+          description: ID is required to delete category
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         404:
           description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     patch:
       summary: Update a category
       parameters:
@@ -162,8 +246,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Category'
+        400:
+          description: Invalid data for updating category or ID is required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         404:
           description: Category not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   schemas:
     Note:
@@ -239,3 +339,10 @@ components:
           type: string
       required:
         - name
+    Error:
+      type: object
+      properties:
+        status:
+          type: string
+        error:
+          type: string
