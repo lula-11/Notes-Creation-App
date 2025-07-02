@@ -17,6 +17,7 @@ services:
       DB_USER: postgres
       DB_PASS: postgres
       DB_NAME: notes
+      PRIVATE_KEY: thisIsASecretKey
     depends_on:
       - db
   
