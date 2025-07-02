@@ -21,7 +21,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 initializePassport();
 app.use(passport.initialize());
-app.use(cors());
+
+const allowedOrigins = [`http://localhost:${PORT}`, `http://localhost:3001`];
+
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true
+}));
+
 
 app.use(addLogger);
 app.use('/api/notes', notesRouter.getRouter());
