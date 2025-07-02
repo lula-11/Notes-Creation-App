@@ -5,9 +5,21 @@ info:
   version: 1.0.0
 servers:
   - url: http://localhost:3000
+security:
+  - bearerAuth: []
+parameters:
+  refreshTokenCookie:
+    name: refreshToken
+    in: cookie
+    description: Refresh token for authentication
+    required: false
+    schema:
+      type: string
 paths:
   /api/notes:
     get:
+      security:
+        - bearerAuth: []
       summary: Get all notes
       description: Returns a list of notes. You can filter by archived status and category.
       parameters:
@@ -42,6 +54,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
+      security:
+        - bearerAuth: []
       summary: Create a new note
       requestBody:
         required: true
@@ -70,6 +84,8 @@ paths:
                 $ref: '#/components/schemas/Error'
   /api/notes/{id}:
     delete:
+      security:
+        - bearerAuth: []
       summary: Delete a note
       parameters:
         - in: path
@@ -103,6 +119,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     patch:
+      security:
+        - bearerAuth: []
       summary: Update a note
       parameters:
         - in: path
@@ -143,6 +161,8 @@ paths:
                 $ref: '#/components/schemas/Error'
   /api/categories:
     get:
+      security:
+        - bearerAuth: []
       summary: Get all categories
       responses:
         200:
@@ -165,6 +185,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
+      security:
+        - bearerAuth: []
       summary: Create a new category
       requestBody:
         required: true
@@ -193,6 +215,8 @@ paths:
                 $ref: '#/components/schemas/Error'
   /api/categories/{id}:
     delete:
+      security:
+        - bearerAuth: []
       summary: Delete a category
       parameters:
         - in: path
@@ -226,6 +250,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     patch:
+      security:
+        - bearerAuth: []
       summary: Update a category
       parameters:
         - in: path
@@ -264,7 +290,144 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /api/sessions/signup:
+    post:
+      summary: Create a new user
+      description: Registers a new user in the system.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Invalid data or user already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/sessions/login:
+    post:
+      summary: Log in
+      description: Logs in and returns the accessToken and refreshToken.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+                  expiresIn:
+                    type: integer
+        401:
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/sessions/refresh:
+    post:
+      security:
+        - bearerAuth: []
+      summary: Refresh token
+      description: Returns a new accessToken using the refreshToken.
+      parameters:
+        - $ref: '#/parameters/refreshTokenCookie'
+      responses:
+        200:
+          description: Token refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+                  expiresIn:
+                    type: integer
+        401:
+          description: Invalid or expired refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/sessions/logout:
+    post:
+      security:
+        - bearerAuth: []
+      summary: Log out
+      description: Deletes the refreshToken and logs out the user.
+      parameters:
+        - $ref: '#/parameters/refreshTokenCookie'
+      responses:
+        200:
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                type: object
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     Note:
       type: object
@@ -345,4 +508,13 @@ components:
         status:
           type: string
         error:
+          type: string
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        role:
           type: string
