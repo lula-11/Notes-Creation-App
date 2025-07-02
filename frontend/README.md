@@ -1,12 +1,56 @@
-# React + Vite
+# Notes App - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Web application for managing notes, built with React, Vite, and Tailwind CSS.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- ✅ Create, edit and delete notes
+- ✅ Archive/unarchive notes
+- ✅ Filter by category and archive status
+- ✅ Responsive interface
+- ✅ Form validation
+- ✅ State management with Context API
+- ✅ REST API communication
 
-## Expanding the ESLint configuration
+## Technologies
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **React** - UI library
+- **Vite** - Build tool and dev server
+- **Tailwind CSS** - CSS framework
+- **Axios** - HTTP client
+- **React Router** - Routing
+
+## Usage
+
+### Create a Note
+1. Click "New Note"
+2. Fill in title and content
+3. Optionally select a category
+4. Click "Create"
+
+### Edit a Note
+1. Click the edit button
+2. Modify the desired fields
+3. Click "Update"
+
+### Archive/Unarchive
+- Click the archive button to change status
+
+### Filter Notes
+- Use the filters at the top to filter by:
+  - Category (including "All categories" and "No category")
+  - Status (Active/Archived/All)
+
+### Delete a Note
+1. Click the delete button
+2. Confirm deletion
+
+## API Endpoints
+
+The application connects to the following endpoints:
+
+- `GET /api/notes` - Get all notes. It can be filtered by query parameters for category and status (archived=true/false)
+- `POST /api/notes` - Create new note
+- `PATCH /api/notes/:id` - Update note
+- `DELETE /api/notes/:id` - Delete note
+- `GET /api/categories` - Get categories
