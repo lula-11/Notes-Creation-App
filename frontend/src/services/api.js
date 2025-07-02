@@ -17,6 +17,12 @@ api.interceptors.response.use(
   }
 );
 
+export const sessionsAPI = {
+  login: (data) => api.post('/sessions/login', data, { withCredentials: true }),
+  logout: () => api.post('/sessions/logout', {}, { withCredentials: true }),
+  refresh: () => api.post('/sessions/refresh', {}, { withCredentials: true }),
+}
+
 export const notesAPI = {
   getAll: (params = {}) => api.get('/notes', { params }),
   getById: (id) => api.get(`/notes/${id}`),
@@ -33,4 +39,4 @@ export const categoriesAPI = {
   delete: (id) => api.delete(`/categories/${id}`),
 };
 
-export default api; 
+export default api;

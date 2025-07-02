@@ -1,18 +1,15 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { NotesProvider } from './context/NotesContext.jsx';
 import NotesPage from './pages/NotesPage.jsx';
+import { AxiosInstance } from './components/auth/AxiosInstance.jsx';
 
 function App() {
   return (
-    <Router>
-      <NotesProvider>
-        <div className="App">
-          <Routes>
-            <Route path="/" element={<NotesPage />} />
-          </Routes>
-        </div>
-      </NotesProvider>
-    </Router>
+    <NotesProvider>
+      <AxiosInstance />
+      <div className="App">
+        <NotesPage />
+      </div>
+    </NotesProvider>
   );
 }
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNotes } from '../context/NotesContext.jsx';
+import { useAuth } from '../components/auth/AuthProvider';
 import FilterBar from '../components/FilterBar.jsx';
 import NotesList from '../components/NotesList.jsx';
 import NoteForm from '../components/NoteForm.jsx';
@@ -21,6 +22,7 @@ const NotesPage = () => {
     filters,
     setFilters,
   } = useNotes();
+  const { logout } = useAuth();
 
   const [showNoteForm, setShowNoteForm] = useState(false);
   const [editingNote, setEditingNote] = useState(null);
@@ -108,6 +110,16 @@ const NotesPage = () => {
     setEditingCat(null);
   };
 
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="text-2xl text-red-600 font-bold mb-4">Error</div>
+          <div className="text-gray-700">{error}</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen p-0 md:p-6 bg-gradient-to-br from-[#e0e7ff] via-[#f3e8ff] to-[#f0fdfa]">
@@ -126,12 +138,20 @@ const NotesPage = () => {
               <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Notes
               </h1>
-              <button
-                onClick={handleAddNote}
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
-              >
-                + New Note
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={handleAddNote}
+                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                >
+                  + New Note
+                </button>
+                <button
+                  onClick={logout}
+                  className="px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
+                >
+                  Logout
+                </button>
+              </div>
             </div>
             <FilterBar
               categories={categories}
@@ -232,4 +252,4 @@ const CategoryForm = ({ category, onSubmit, onCancel }) => {
   );
 };
 
-export default NotesPage; 
+export default NotesPage;
