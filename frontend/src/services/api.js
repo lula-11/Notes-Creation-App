@@ -39,4 +39,8 @@ export const categoriesAPI = {
   delete: (id) => api.delete(`/categories/${id}`),
 };
 
+export const aiAPI = {
+  generateContent: (prompt) => api.post('/ai/generate', { prompt }),
+};
+
 export default api;

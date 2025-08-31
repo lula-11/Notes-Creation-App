@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { notesRouter } from './routes/notesRouter.js';
@@ -12,18 +13,15 @@ import { addLogger } from './config/logger.config.js';
 import { sequelize } from './config/database.js';
 import './models/models.js';
 import { createAdminUserIfNotExists } from './utils.js';
+import { aiRouter } from './routes/aiRouter.js';
 
 const PORT = process.env.PORT || 3000;
 
 const app = express();
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-initializePassport();
-app.use(passport.initialize());
+const allowedOrigins = [`http://localhost:${PORT}`, 'http://localhost:3001', 'http://localhost:3004', 'http://localhost:8080'];
 
-const allowedOrigins = [`http://localhost:${PORT}`, `http://localhost:3001`];
+console.log("CORS is configured for these origins1:", allowedOrigins);
 
 app.use(cors({
     origin: allowedOrigins,
@@ -31,11 +29,22 @@ app.use(cors({
 }));
 
 
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+initializePassport();
+app.use(passport.initialize());
+
+
+
+
 app.use(addLogger);
 app.use('/api/notes', notesRouter.getRouter());
 app.use('/api/categories', categoriesRouter.getRouter());
 app.use('/api/sessions', sessionsRouter.getRouter());
 app.use('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(docsSpecs, { swaggerOptions: { withCredentials: true } }));
+app.use('/api/ai', aiRouter.getRouter());
 
 sequelize.authenticate()
     .then(async () => {
@@ -50,3 +59,4 @@ sequelize.authenticate()
         console.error('Unable to connect to the database:', error);
         process.exit(1);
     });
+

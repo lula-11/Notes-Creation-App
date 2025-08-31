@@ -18,6 +18,7 @@ services:
       DB_PASS: postgres
       DB_NAME: notes
       PRIVATE_KEY: thisIsASecretKey
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
     depends_on:
       - db
   

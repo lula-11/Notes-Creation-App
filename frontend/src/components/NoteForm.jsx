@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { aiAPI } from '../services/api'; 
+
 
 const NoteForm = ({ note, categories, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -7,6 +9,10 @@ const NoteForm = ({ note, categories, onSubmit, onCancel }) => {
     category: '',
   });
   const [errors, setErrors] = useState({});
+
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [aiError, setAiError] = useState('');
 
   useEffect(() => {
     if (note) {
@@ -65,6 +71,31 @@ const NoteForm = ({ note, categories, onSubmit, onCancel }) => {
     }
   };
 
+  const handleGenerateContent = async () => {
+    if (!aiPrompt.trim()) {
+      setAiError('Please enter a prompt for the AI.');
+      return;
+    }
+    setIsGenerating(true);
+    setAiError('');
+    try {
+      const response = await aiAPI.generateContent(aiPrompt);
+      const generatedText = response.payload.content;
+      
+      // 智能填充：第一行作为标题，其余作为内容
+      const lines = generatedText.split('\n');
+      const title = lines[0];
+      const content = lines.slice(1).join('\n').trim();
+
+      setFormData(prev => ({ ...prev, title, content }));
+    } catch (error) {
+      setAiError('Failed to generate content. Please try again.');
+      console.error('AI Generation Error:', error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
@@ -81,6 +112,46 @@ const NoteForm = ({ note, categories, onSubmit, onCancel }) => {
         </div>
         
         <form onSubmit={handleSubmit} className="p-6">
+
+
+
+           <div className="mb-6 p-4 border border-blue-200 bg-blue-50 rounded-lg">
+            <label htmlFor="ai-prompt" className="block text-sm font-semibold text-gray-700 mb-2">
+              ✨ Generate with AI
+            </label>
+            <textarea
+              id="ai-prompt"
+              value={aiPrompt}
+              onChange={(e) => { setAiPrompt(e.target.value); setAiError(''); }}
+              rows="2"
+              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none border-gray-300"
+              placeholder="e.g., Write a short summary of the benefits of exercise"
+              disabled={isGenerating}
+            />
+            {aiError && (
+              <p className="mt-2 text-sm text-red-600">{aiError}</p>
+            )}
+            <button
+              type="button"
+              onClick={handleGenerateContent}
+              disabled={isGenerating}
+              className="mt-3 w-full px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            >
+              {isGenerating ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Generating...
+                </>
+              ) : 'Generate & Fill'}
+            </button>
+          </div>
+
+
+
+
           <div className="mb-6">
             <label htmlFor="title" className="block text-sm font-semibold text-gray-700 mb-2">
               Title *
@@ -100,7 +171,9 @@ const NoteForm = ({ note, categories, onSubmit, onCancel }) => {
               <p className="mt-2 text-sm text-red-600">{errors.title}</p>
             )}
           </div>
-          
+
+
+
           <div className="mb-6">
             <label htmlFor="content" className="block text-sm font-semibold text-gray-700 mb-2">
               Content *
